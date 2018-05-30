@@ -95,6 +95,14 @@ namespace ListOrganizer
 
                 Search mysearch = new Search(parameter);
             }
+
+            else if(initialchoice.Equals("Delete"))
+            {
+                Console.WriteLine("What movie would you like to delete?");
+                string deletechoice = Console.ReadLine();
+
+
+            }
             
 
 
@@ -172,21 +180,28 @@ namespace ListOrganizer
 
             while (myreader.Read())
             {
-                Console.WriteLine(myreader.GetString(0));
-                /*
-                string exist = myreader.GetString(0);
-                                
-                if (exist.Equals(movie))
+                Console.WriteLine(myreader.IsDBNull(0));
+                /*                                               
+                if (myreader.IsDBNull(0))
                 {
-                    Console.WriteLine("That movie exists in the colleciton");
+                    Console.WriteLine("That movie does not exist in the colleciton");
                 }
                 else
                 {
                     Console.WriteLine(myreader.GetValue(0));
-                }
-                */
-                
+                }*/
+                                
             }
         }
     }
+
+    class DeleteEntry
+    {
+        public DeleteEntry()
+        {
+
+        }
+    }
+
+        
 }
