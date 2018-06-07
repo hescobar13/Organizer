@@ -10,68 +10,7 @@ namespace ListOrganizer
     class Program
     {
         static void Main(string[] args)
-        {
-            //Create connection object to be used with SQLiteCommand
-            /* 
-            SQLiteConnection myconnection = new SQLiteConnection("Data Source=Organizerdb.sqlite");            
-            myconnection.Open();
-            */
-
-            /* Creates a new table
-            string createtable = "Create Table List (Entry string)";
-            SQLiteCommand mycommand = new SQLiteCommand(createtable, myconnection);
-            mycommand.ExecuteNonQuery();
-            */
-
-            /*Inserts into a table
-            SQLiteCommand mycommand = new SQLiteCommand();
-            string insertdata = "Insert Into List (Entry) Values ('Hello')";
-            mycommand.CommandText = insertdata;
-            //the next line i have to manually set connection for the class because there is no constructor tht only takes connection
-            //you can also do SQLiteCommand mycommand = myconnection.CreateCommand()... this automatically sets the connection for the 
-            //new command object that is created, instead of having to do it manually as I do it below
-            mycommand.Connection = myconnection;
-            Console.WriteLine(mycommand.CommandText);
-            mycommand.ExecuteNonQuery();
-            Console.ReadLine();
-            */
-
-            //Read from Table
-            /*
-            SQLiteCommand mycommand = new SQLiteCommand();
-            mycommand.CommandText = "Select Entry From List";
-            mycommand.Connection = myconnection;
-            SQLiteDataReader myreader = mycommand.ExecuteReader();
-            Console.WriteLine(myreader.Read());
-            */
-
-            /* Another Example of using parameters                  
-            SQLiteConnection myconnection = new SQLiteConnection("Data Source=Organizerdb.sqlite");
-            myconnection.Open();
-            
-            string movie = "thor";
-            SQLiteCommand mycommand = new SQLiteCommand();
-            mycommand.CommandText = "Select Entry From List Where Entry LIKE @movie";
-            mycommand.Connection = myconnection;
-            mycommand.Parameters.AddWithValue("@movie", movie);
-            
-            SQLiteDataReader myreader = mycommand.ExecuteReader();
-
-            while (myreader.Read())
-            {
-                Console.WriteLine(myreader.GetValue(0));
-            }
-            Console.ReadLine();
-            */
-
-
-
-
-
-             SQLiteConnection myconnection = new SQLiteConnection("Data Source=Organizerdb.sqlite");
-             myconnection.Open();
-
-
+        {   
             Console.WriteLine("Choose what you want to do:");
             string initialchoice = Console.ReadLine();
 
@@ -96,12 +35,12 @@ namespace ListOrganizer
                 Search mysearch = new Search(parameter);
             }
 
-            else if(initialchoice.Equals("Delete"))
+            else if(initialchoice.Equals("delete"))
             {
                 Console.WriteLine("What movie would you like to delete?");
                 string deletechoice = Console.ReadLine();
 
-
+                DeleteEntry mydeletion = new DeleteEntry(deletechoice);
             }
             
 
@@ -168,38 +107,49 @@ namespace ListOrganizer
     class Search
     {
         public Search(string movie)
-        {           
+        {
             SQLiteConnection myconnection = new SQLiteConnection("Data Source=Organizerdb.sqlite");
             myconnection.Open();
 
             SQLiteCommand mycommand = new SQLiteCommand();
+            //user @ to denote a variable in SQL
             mycommand.CommandText = "Select Entry From List Where Entry LIKE @movie";
             mycommand.Connection = myconnection;
+            //Added the Parameter to my command so it can be used when I execute the command. I have already defined the movie variable in the constructor
             mycommand.Parameters.AddWithValue("@movie", "%" + movie + "%");
             SQLiteDataReader myreader = mycommand.ExecuteReader();
 
-            while (myreader.Read())
+            //First Check if it has rows. Use the "!" to negate the myreader.HasRows returned value.
+            if (!myreader.HasRows)
             {
-                Console.WriteLine(myreader.IsDBNull(0));
-                /*                                               
-                if (myreader.IsDBNull(0))
-                {
-                    Console.WriteLine("That movie does not exist in the colleciton");
-                }
-                else
+                Console.WriteLine("It Doesn't Exist!");
+            }
+            else
+            {
+                //Have to use a while loop to iterate the command until there are no more rows to read from
+                //Have to use a while loop to iterate the command until there are no more rows to read from
+                while (myreader.Read())
                 {
                     Console.WriteLine(myreader.GetValue(0));
-                }*/
-                                
+                }
             }
         }
     }
 
     class DeleteEntry
     {
-        public DeleteEntry()
+        public DeleteEntry(string deletionchoice)
         {
+            SQLiteConnection myconnection = new SQLiteConnection("Data Source=Organizerdb.sqlite");
+            myconnection.Open();
 
+            SQLiteCommand mycommand = new SQLiteCommand();
+            mycommand.CommandText = "DELETE FROM List WHERE Entry =@movie";
+            mycommand.Connection = myconnection;
+            mycommand.Parameters.AddWithValue("@movie", deletionchoice);
+            SQLiteDataReader myreader = mycommand.ExecuteReader();
+
+            Console.WriteLine("Record has been deleted");
         }
     }
 
